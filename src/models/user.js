@@ -1,4 +1,4 @@
-const { Timestamp } = require("mongodb");
+const mongoose = require("mongoose");
 
 const usuarioSchema = new mongoose.Schema({
     email: {
@@ -14,3 +14,4 @@ const usuarioSchema = new mongoose.Schema({
     timestamps: true 
     }
 );
+module.exports = mongoose.model('User', usuarioSchema);
