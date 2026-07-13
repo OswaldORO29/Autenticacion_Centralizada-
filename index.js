@@ -14,6 +14,19 @@ app.use(express.json());
 // Montar las rutas
 app.use('/api/auth', loginRoutes);
 
+app.get('/', (req, res) => {
+    res.json({
+        message: 'API de autenticación activa',
+        endpoints: [
+            'POST /api/auth/register',
+            'POST /api/auth/login',
+            'GET /api/auth/users',
+            'POST /api/auth/create',
+            'DELETE /api/auth/delete/:id'
+        ]
+    });
+});
+
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
 });
