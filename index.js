@@ -1,32 +1,31 @@
-require('dotenv').config();
+// 1. Importar dependencias
+require('dotenv').config(); // Permite leer el archivo .env
 const express = require('express');
-const app = express();
-const PORT = process.env.PORT || 3000;
-const connectDB = require('./src/config/database');
-const loginRoutes = require('./src/routes/login');
 
-// Inicializar conexión a MongoDB
+// 2. Importar tus módulos locales
+const connectDB = require('./src/config/database');// Conexión a MongoDB
+const verificarAppToken = require('./src/middlewares/appTokenMiddleware'); // Middleware global
+const loginRoutes = require('./src/routes/login'); // Rutas de autenticación y usuarios
+
+// 3. Inicializar la aplicación Express
+const app = express();
+
+// 4. Conectar a la base de datos
 connectDB();
 
-// Middleware CRÍTICO: Permite leer req.body en formato JSON
-app.use(express.json()); 
+// 5. Middlewares de configuración general
+app.use(express.json()); // Fundamental para poder leer req.body en formato JSON
 
-// Montar las rutas
-app.use('/api/auth', loginRoutes);
+// 6. Middleware Global del App-Token
+// Al ponerlo aquí, ABSOLUTAMENTE TODAS las rutas definidas debajo exigirán el "app-token" en los headers
+app.use(verificarAppToken);
 
-app.get('/', (req, res) => {
-    res.json({
-        message: 'API de autenticación activa',
-        endpoints: [
-            'POST /api/auth/register',
-            'POST /api/auth/login',
-            'GET /api/auth/users',
-            'POST /api/auth/create',
-            'DELETE /api/auth/delete/:id'
-        ]
-    });
-});
+// 7. Definir las Rutas
+// Todas las rutas dentro de loginRoutes estarán bajo el prefijo '/api'
+app.use('/api', loginRoutes);
 
+// 8. Iniciar el servidor
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
+    console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
